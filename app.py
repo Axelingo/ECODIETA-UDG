@@ -1,5 +1,24 @@
+import subprocess
+import sys
+
+# =====================================================================
+# TRUCO PARA CONFIGURACIÓN EN AUTOMÁTICO DE RENDER (EVITA MODULE NOT FOUND)
+# =====================================================================
+try:
+    import pymysql
+except ImportError:
+    print("AVISO: Pymysql no detectado en el servidor. Forzando instalación...")
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "pymysql"])
+        import pymysql
+        print("¡Pymysql instalado con éxito desde el código!")
+    except Exception as e:
+        print(f"Error crítico al intentar instalar pymysql por código: {e}")
+
+# =====================================================================
+# RESTO DE TU CÓDIGO NORMAL DE FLASK
+# =====================================================================
 from flask import Flask, render_template, request, redirect, url_for, flash
-import pymysql
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_ecodieta'
@@ -8,15 +27,15 @@ app.secret_key = 'clave_secreta_ecodieta'
 def obtener_conexion():
     try:
         return pymysql.connect(
-            host='localhost',       # Esto funciona en tu PC, pero fallaría en Render sin el try/except
+            host='localhost',       # Funciona en tu PC, pero fallará en Render sin el try/except
             user='root',
-            password='',            # Pon aquí tu contraseña si usas una en local
-            database='ecodieta',    # Asegúrate de que coincida con el nombre de tu base de datos
+            password='',            # Pon aquí tu contraseña local si usas una
+            database='ecodieta',    # Nombre de tu base de datos local
             cursorclass=pymysql.cursors.DictCursor
         )
     except Exception as e:
-        # Si está en Render y no detecta el localhost, esto evita que el servidor se caiga (status 1)
-        print(f"AVISO: No se pudo conectar a la MySQL local ({e}). La app seguirá corriendo.")
+        # Evita que Render se muera al arrancar si no hay MySQL local encendido
+        print(f"AVISO: No se pudo conectar a la MySQL local ({e}). La app seguirá viva.")
         return None
 
 # RUTA PRINCIPAL (INDEX)
@@ -31,13 +50,11 @@ def registro():
         nombre = request.form.get('nombre')
         consumo_carne = request.form.get('consumo_carne')
         
-        # Validación básica
         if not nombre or not consumo_carne:
             flash('Por favor, llena todos los campos.', 'danger')
             return redirect(url_for('registro'))
         
-        # Cálculo rápido de huella de CO2 (Ajusta la fórmula según tu lógica del proyecto)
-        # Ejemplo: 1kg de carne equivale aprox a 27kg de CO2
+        # Fórmula de ejemplo para la huella de CO2 (1kg carne = ~27kg CO2)
         co2_calculado = float(consumo_carne) * 27.0
         
         conexion = obtener_conexion()
@@ -53,7 +70,7 @@ def registro():
             finally:
                 conexion.close()
         else:
-            # Si no hay base de datos (como en Render), procesa el resultado en memoria para que el usuario lo vea
+            # Si no hay base de datos (como en Render), procesa en memoria para que no se caiga la experiencia
             flash(f'¡Cálculo realizado con éxito de forma local (Sin BD)! Tu huella es de {co2_calculado} kg de CO2.', 'info')
             
         return render_template('registro.html', nombre=nombre, co2=co2_calculado)
@@ -62,7 +79,7 @@ def registro():
 
 # INICIO DE LA APLICACIÓN
 if __name__ == '__main__':
-    # Usar el puerto que Render requiere por defecto, o el 5000 en tu computadora
     import os
+    # Render usa una variable de entorno llamada PORT, en tu PC usará el puerto 5000 por defecto
     puerto = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=puerto, debug=True)
