@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECO-DIETA | Lista de Retos</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #e8f5e9;
+            --accent: #c62828;
+            --text-dark: #1b5e20;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #1b5e20 0%, #388e3c 100%);
+            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+        }
+
+        .main-container { display: flex; gap: 20px; width: 100%; max-width: 1300px; flex-wrap: wrap; justify-content: center; align-items: stretch; }
+
+        /* Tarjeta Izquierda Principal (Retos Escogibles) */
+        .card-main {
+            background: white; padding: 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            flex: 2; min-width: 320px; max-width: 750px; display: flex; flex-direction: column;
+        }
+
+        /* Tarjeta Derecha (Calendario y Estado) */
+        .card-side {
+            background: white; padding: 20px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            flex: 1; min-width: 280px; max-width: 340px; display: flex; flex-direction: column; justify-content: flex-start; height: fit-content; margin-top: auto;
+        }
+
+        h2 { color: var(--text-dark); margin-top: 0; margin-bottom: 15px; }
+        .section-title { font-size: 16px; color: var(--text-dark); border-bottom: 2px solid var(--primary-light); padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; font-weight: bold; }
+        .side-title { font-size: 18px; color: var(--text-dark); margin-top: 0; text-align: center; margin-bottom: 10px; }
+        
+        .badge {
+            background: var(--primary-light); color: var(--primary); padding: 8px 15px; 
+            border-radius: 20px; font-weight: bold; text-align: center; margin-bottom: 15px; border: 1px solid #c8e6c9; font-size: 14px;
+        }
+
+        /* Sistema de Alerta del Diagnóstico */
+        .diagnostico-box { background: #fff3e0; border-left: 5px solid #ffb74d; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-size: 13px; color: #e65100; font-weight: 500; }
+        .diagnostico-box.critico { background: #ffebee; border-left-color: var(--accent); color: #c62828; }
+        .diagnostico-box.bajo { background: #e8f5e9; border-left-color: #81c784; color: #2e7d32; }
+
+        /* Lista de Opciones de Retos Interactivos */
+        .retos-lista { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; max-height: 320px; overflow-y: auto; padding-right: 5px; }
+        
+        .reto-item { 
+            display: flex; align-items: flex-start; gap: 10px; background: #f9f9f9; 
+            padding: 10px 12px; border-radius: 12px; border: 1px solid #eee; transition: 0.2s; cursor: pointer;
+        }
+        .reto-item:hover { background: #f1f8e9; border-color: #c8e6c9; }
+        .reto-item input[type="checkbox"] { width: auto; margin-top: 3px; cursor: pointer; }
+        
+        .reto-texto { font-size: 12.5px; color: #444; line-height: 1.3; }
+        .reto-texto strong { color: #1b5e20; }
+
+        /* NUEVA BARRA DE PROGRESO */
+        .progreso-section { background: #f5f5f5; padding: 12px; border-radius: 15px; margin-bottom: 15px; }
+        .progreso-texto { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; color: #444; margin-bottom: 5px; }
+        .progress-bar-container { background: #e0e0e0; width: 100%; height: 10px; border-radius: 5px; overflow: hidden; }
+        .progress-bar-fill { background: linear-gradient(90deg, #4caf50, #2e7d32); width: 0%; height: 100%; transition: width 0.4s ease; }
+
+        /* Estructura Mini-Calendario Compacto */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 5px; }
+        .calendar-day {
+            aspect-ratio: 1; background: #f5f5f5; border-radius: 5px; display: flex; align-items: center;
+            justify-content: center; font-size: 10px; font-weight: bold; color: #666; cursor: pointer; transition: 0.15s; user-select: none;
+        }
+        .calendar-day:hover { background: #e0e0e0; }
+        .calendar-day.completed { background: #a5d6a7; color: #1b5e20; font-size: 11px; font-weight: bold; }
+
+        .btn-back { background: #1b3022; color: white; padding: 12px; text-align: center; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; transition: 0.2s; margin-top: 15px; }
+        .btn-back:hover { background: #0c1810; }
+        
+        .days-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 10px; font-weight: bold; color: #999; margin-bottom: 3px; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <!-- SECCIÓN PRINCIPAL IZQUIERDA: Selección de Múltiples Retos -->
+        <div class="card-main">
+            <h2>Elige tus Retos Ambientales</h2>
+            <div id="user-badge" class="badge">Usuario Anónimo</div>
+            
+            <!-- Recuadro Dinámico del Diagnóstico del Sistema -->
+            <div id="sistema-diagnostico" class="diagnostico-box">
+                Calcula tu huella en la pantalla de inicio para recibir tu recomendación de frecuencia.
+            </div>
+
+            <!-- BLOQUE: RETOS POR DÍA -->
+            <div class="section-title">Retos de 1 Día (Impacto Leve)</div>
+            <div class="retos-lista">
+                <label class="reto-item">
+                    <input type="checkbox" id="rd1">
+                    <span class="reto-texto"><strong>Lunes sin carne:</strong> Eliminar por completo el consumo de res y puerco durante todo el día de hoy.</span>
+                </label>
+                <label class="reto-item">
+                    <input type="checkbox" id="rd2">
+                    <span class="reto-texto"><strong>Ducha Express:</strong> Reducir el tiempo de baño a un máximo de 5 minutos el día de hoy.</span>
+                </label>
+                <label class="reto-item">
+                    <input type="checkbox" id="rd3">
+                    <span class="reto-texto"><strong>Cero Desperdicio:</strong> Terminar por completo todas las porciones de comida preparadas sin tirar nada a la basura.</span>
+                </label>
+            </div>
+
+            <!-- BLOQUE: RETOS POR SEMANA -->
+            <div class="section-title">Retos Semanales (Impacto Moderado)</div>
+            <div class="retos-lista">
+                <label class="reto-item">
+                    <input type="checkbox" id="rs1">
+                    <span class="reto-texto"><strong>Menú alternado:</strong> Consumir platillos 100% basados en vegetales (legumbres, Tofu) de lunes a jueves.</span>
+                </label>
+                <label class="reto-item">
+                    <input type="checkbox" id="rs2">
+                    <span class="reto-texto"><strong>Separación estricta:</strong> Clasificar cartón, plástico y aluminio en contenedores independientes durante la semana.</span>
+                </label>
+                <label class="reto-item">
+                    <input type="checkbox" id="rs3">
+                    <span class="reto-texto"><strong>Desconexión total:</strong> Desconectar cargadores, pantallas y microondas antes de salir hacia la universidad todos los días.</span>
+                </label>
+            </div>
+
+            <!-- BLOQUE: RETOS MENSUALES -->
+            <div class="section-title">Retos Mensuales (Impacto Crítico)</div>
+            <div class="retos-lista">
+                <label class="reto-item">
+                    <input type="checkbox" id="rm1">
+                    <span class="reto-texto"><strong>Transición Sostenible:</strong> Sustituir la totalidad de lácteos y carnes rojas por proteínas vegetales durante 30 días.</span>
+                </label>
+                <label class="reto-item">
+                    <input type="checkbox" id="rm2">
+                    <span class="reto-texto"><strong>Cero Ultraprocesados:</strong> Evitar la compra de comida chatarra y empaquetados en la tiendita escolar durante todo el mes.</span>
+                </label>
+                <label class="reto-item">
+                    <input type="checkbox" id="rm3">
+                    <span class="reto-texto"><strong>Eco-Bolsa UDG:</strong> Utilizar exclusivamente bolsas de tela y termos reutilizables evitando plásticos de un solo uso en el campus.</span>
+                </label>
+            </div>
+            
+            <a href="/" class="btn-back">Volver al Dashboard</a>
+        </div>
+
+        <!-- ESQUINA INFERIOR DERECHA: Barra de Progreso y Mini Calendario -->
+        <div class="card-side">
+            <p class="side-title">Monitoreo</p>
+            
+            <!-- Barra de Progreso Acoplada -->
+            <div class="progreso-section">
+                <div class="progreso-texto">
+                    <span>Meta Mensual</span>
+                    <span id="porcentaje-txt">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="progress-fill" class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <p style="font-size: 11px; color: #666; text-align: center; margin-top: 0; margin-bottom: 8px; line-height: 1.3;">
+                Marca cada día que lograste mantener activos tus retos elegidos:
+            </p>
+
+            <div class="days-header">
+                <div>D</div><div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div>
+            </div>
+            
+            <div id="calendar" class="calendar-grid">
+                <!-- Generado dinámicamente -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Cargar nombre de usuario
+            let user = localStorage.getItem('usuario');
+            if (user) {
+                document.getElementById('user-badge').innerText = "Eco-Perfil: " + user.split('@')[0];
+            }
+
+            // 2. Leer Huella y desplegar la sugerencia del Sistema Inteligente
+            let huellaStr = localStorage.getItem('miHuella') || "0";
+            let huella = parseFloat(huellaStr);
+            let diagBox = document.getElementById('sistema-diagnostico');
+
+            if (huella > 0) {
+                if (huella <= 40) {
+                    diagBox.className = "diagnostico-box bajo";
+                    diagBox.innerHTML = `<strong>Diagnóstico del Sistema:</strong> Tu huella es baja (<strong>${huella} kg CO2</strong>). Te sugerimos enfocarte principalmente en seleccionar y cumplir los <strong>Retos de 1 Día</strong>.`;
+                } else if (huella > 40 && huella <= 100) {
+                    diagBox.className = "diagnostico-box";
+                    diagBox.innerHTML = `<strong>Diagnóstico del Sistema:</strong> Tu huella es moderada (<strong>${huella} kg CO2</strong>). El sistema te recomienda elegir al menos dos <strong>Retos Semanales</strong>.`;
+                } else {
+                    diagBox.className = "diagnostico-box critico";
+                    diagBox.innerHTML = `<strong>Diagnóstico del Sistema Crítico:</strong> Tu emisión es alta (<strong>${huella} kg CO2</strong>). Es obligatorio que elijas e intentes cumplir los <strong>Retos Mensuales</strong> para mitigar tu impacto.`;
+                }
+            }
+
+            // 3. Persistencia de las casillas (Checkboxes) de retos seleccionados por el usuario
+            const checkboxes = document.querySelectorAll('.retos-lista input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                // Restaurar estado guardado
+                if (localStorage.getItem(cb.id) === 'true') {
+                    cb.checked = true;
+                }
+                // Guardar cambios al dar clic
+                cb.addEventListener('change', function() {
+                    localStorage.setItem(cb.id, cb.checked);
+                });
+            });
+
+            // 4. Renderizar Mini Calendario y Controlar Barra de Progreso
+            const calendarEl = document.getElementById('calendar');
+            let progresoGuardado = JSON.parse(localStorage.getItem('progresoDias')) || {};
+
+            function actualizarBarraProgreso() {
+                let diasCompletados = 0;
+                for (let i = 1; i <= 30; i++) {
+                    if (progresoGuardado[i]) diasCompletados++;
+                }
+                let porcentaje = Math.round((diasCompletados / 30) * 100);
+                document.getElementById('progress-fill').style.width = porcentaje + "%";
+                document.getElementById('porcentaje-txt').innerText = porcentaje + "% (" + diasCompletados + "/30d)";
+            }
+
+            for (let i = 1; i <= 30; i++) {
+                const dayBox = document.createElement('div');
+                dayBox.classList.add('calendar-day');
+                dayBox.innerText = i;
+
+                if (progresoGuardado[i]) {
+                    dayBox.classList.add('completed');
+                    dayBox.innerText = "✓";
+                }
+
+                dayBox.addEventListener('click', function() {
+                    if (dayBox.classList.contains('completed')) {
+                        dayBox.classList.remove('completed');
+                        dayBox.innerText = i;
+                        progresoGuardado[i] = false;
+                    } else {
+                        dayBox.classList.add('completed');
+                        dayBox.innerText = "✓";
+                        progresoGuardado[i] = true;
+                    }
+                    localStorage.setItem('progresoDias', JSON.stringify(progresoGuardado));
+                    actualizarBarraProgreso();
+                });
+
+                calendarEl.appendChild(dayBox);
+            }
+
+            actualizarBarraProgreso();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECO-DIETA | Dashboard</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #e8f5e9;
+            --accent: #c62828;
+            --text-dark: #1b5e20;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: linear-gradient(135deg, #1b5e20 0%, #388e3c 100%);
+            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; 
+        }
+
+        .main-container { display: flex; gap: 20px; width: 100%; max-width: 1400px; flex-wrap: wrap; justify-content: center; }
+
+        .card { 
+            background: white; padding: 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
+            flex: 1; min-width: 320px; max-width: 380px; display: flex; flex-direction: column; text-align: center;
+        }
+
+        .img-container {
+            width: 100%; height: 160px; background-color: #ddd; border-radius: 18px; margin-bottom: 15px; overflow: hidden;
+        }
+        
+        .main-image { width: 100%; height: 100%; object-fit: cover; }
+
+        .page-title { font-size: 28px; font-weight: 800; color: var(--text-dark); margin: 0; }
+        .page-subtitle { color: #66bb6a; font-size: 13px; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; }
+        
+        .auth-box { background: var(--primary-light); padding: 15px; border-radius: 15px; border: 1px solid #c8e6c9; margin-top: auto; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+
+        .btn-reg { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reg:hover { background: #1b5e20; }
+        .btn-retos { background: #1b3022; color: white; padding: 14px; width: 100%; border-radius: 10px; text-decoration: none; display: block; margin-top: 10px; font-weight: bold; box-sizing: border-box; }
+
+        .scroll-calc { max-height: 380px; overflow-y: auto; padding-right: 10px; text-align: left; }
+        label { display: block; font-size: 11px; font-weight: bold; color: #555; margin-top: 10px; }
+        .resultado-box { background: #fff9c4; padding: 15px; border-radius: 12px; margin-top: 15px; border: 1px solid #fbc02d; display: none; text-align: center; font-weight: bold; }
+
+        /* Estilos de la lista de pasos */
+        .pasos-lista { text-align: left; padding: 0 5px; }
+        .paso-item { display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-start; }
+        .paso-num { 
+            background: var(--primary); color: white; width: 28px; height: 28px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-weight: bold; font-size: 13px; flex-shrink: 0; margin-top: 2px;
+        }
+        .paso-contenido h4 { margin: 0 0 4px 0; color: var(--text-dark); font-size: 14px; font-weight: 700; }
+        .paso-contenido p { margin: 0; color: #555; font-size: 12px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <!-- TARJETA 1: Acceso / Registro -->
+        <div class="card">
+            <h1 class="page-title">ECO-DIETA</h1>
+            <p class="page-subtitle">Sustentabilidad UDG</p>
+            <div class="img-container">
+                <img src="https://images.pexels.com/photos/1072179/pexels-photo-1072179.jpeg?auto=compress&cs=tinysrgb&w=600" class="main-image" alt="Naturaleza sustentable">
+            </div>
+            <div class="auth-box">
+                <input type="email" id="userEmail" placeholder="Tu correo electrónico">
+                <button class="btn-reg" onclick="register()">Registrarme</button>
+                <p id="msg-user" style="font-size:11px; margin-top:5px; color:var(--primary); font-weight:bold;"></p>
+            </div>
+            <a href="/registro" class="btn-retos">Ir a Mis Retos</a>
+        </div>
+
+        <!-- TARJETA 2: Instrucciones de Uso -->
+        <div class="card">
+            <h2 style="color: var(--primary); margin-bottom: 5px;">¿Cómo iniciar?</h2>
+            <p style="color: #777; font-size: 12px; margin-top: 0; margin-bottom: 20px; font-weight: 600; text-transform: uppercase;">Guía Eco-Héroe</p>
+            
+            <div class="pasos-lista">
+                <div class="paso-item">
+                    <div class="paso-num">1</div>
+                    <div class="paso-contenido">
+                        <h4>Regístrate con tu correo</h4>
+                        <p>Ingresa tu cuenta en la sección de inicio para poder personalizar tu perfil y tus métricas.</p>
+                    </div>
+                </div>
+                
+                <div class="paso-item">
+                    <div class="paso-num">2</div>
+                    <div class="paso-contenido">
+                        <h4>Calcula tu Huella Inicial</h4>
+                        <p>Contesta el cuestionario de 10 preguntas. Conocerás tus kg de CO2 estimados actuales.</p>
+                    </div>
+                </div>
+                
+                <div class="paso-item">
+                    <div class="paso-num">3</div>
+                    <div class="paso-contenido">
+                        <h4>Entra a "Mis Retos"</h4>
+                        <p>El sistema te recomendará un plan (Día, Semana o Mes) dependiendo de la gravedad de tu impacto.</p>
+                    </div>
+                </div>
+                
+                <div class="paso-item">
+                    <div class="paso-num">4</div>
+                    <div class="paso-contenido">
+                        <h4>Reduce tu CO2 y sé constante</h4>
+                        <p>Marca tus logros diarios para ver tu huella bajar en tiempo real y completar tu calendario mensual.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TARJETA 3: Datos de Impacto Ambiental -->
+        <div class="card">
+            <h2 style="color: var(--primary);">Impacto Ambiental</h2>
+            <div class="img-container">
+                <img src="https://images.pexels.com/photos/65175/pexels-photo-65175.jpeg?auto=compress&cs=tinysrgb&w=600" class="main-image" alt="Planeta Tierra sustentable">
+            </div>
+            <div style="text-align: left; font-size: 14px; line-height: 1.5;">
+                <p>1kg de res = <span style="color:red; font-weight:bold;">15,000 litros de agua</span>.</p>
+                <p>La industria ganadera emite más gases que todo el transporte global combinado.</p>
+                <p>Cambiar a fuentes vegetales como legumbres reduce drásticamente tu emisión personal.</p>
+            </div>
+        </div>
+
+        <!-- TARJETA 4: Cuestionario Calculadora -->
+        <div class="card">
+            <h2 style="color: var(--primary);">Tu Huella</h2>
+            <div class="scroll-calc">
+                <label>1. Consumo de carne roja/semana:</label>
+                <select id="q1"><option value="50">Diario</option><option value="25">3-4 veces</option><option value="10">1-2 veces</option><option value="0">Nunca</option></select>
+                
+                <label>2. ¿Consumes lácteos?</label>
+                <select id="q2"><option value="15">Sí</option><option value="0">No</option></select>
+
+                <label>3. Minutos en la ducha diarios:</label>
+                <input type="number" id="q4" placeholder="Ej. 10" min="0">
+
+                <label>4. Bolsas de basura semanales:</label>
+                <input type="number" id="q6" placeholder="Ej. 2" min="0">
+
+                <label>5. ¿Separas residuos?</label>
+                <select id="q7"><option value="20">No</option><option value="0">Sí</option></select>
+
+                <label>6. ¿Usas plásticos de un solo uso?</label>
+                <select id="q8"><option value="10">Sí</option><option value="0">No</option></select>
+
+                <label>7. ¿Consumes alimentos ultraprocesados?</label>
+                <select id="q9"><option value="15">Sí</option><option value="0">No</option></select>
+
+                <label>8. ¿Dejas aparatos electrónicos conectados?</label>
+                <select id="q5"><option value="15">Sí</option><option value="0">No</option></select>
+
+                <label>9. ¿Conocías el daño ecológico del CO2?</label>
+                <select id="q3"><option value="10">No</option><option value="0">Sí</option></select>
+
+                <label>10. ¿Te comprometes a reducir tu consumo?</label>
+                <select id="q10"><option value="10">Tal vez</option><option value="0">¡Sí por completo!</option></select>
+
+                <button class="btn-reg" style="margin-top:15px; background:var(--text-dark);" onclick="calcular()">Calcular Impacto</button>
+            </div>
+            <div id="resultado" class="resultado-box">
+                Impacto Estimado: <span id="v-total" style="font-size: 22px; color:var(--accent);">0</span> kg CO2
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            let e = localStorage.getItem('usuario');
+            if(e && e.includes('@')) {
+                document.getElementById('msg-user').innerText = "¡Bienvenido, " + e.split('@')[0] + "!";
+                document.getElementById('userEmail').value = e;
+            }
+        }
+
+        function register() {
+            let e = document.getElementById('userEmail').value;
+            if(e.includes('@')) {
+                localStorage.setItem('usuario', e);
+                document.getElementById('msg-user').innerText = "¡Listo! " + e.split('@')[0];
+            } else { alert("Por favor ingresa un correo electrónico válido"); }
+        }
+
+        function calcular() {
+            let res = parseFloat(document.getElementById('q1').value) + parseFloat(document.getElementById('q2').value) + 
+                      (parseFloat(document.getElementById('q4').value||0)*0.8) + (parseFloat(document.getElementById('q6').value||0)*5) +
+                      parseFloat(document.getElementById('q7').value) + parseFloat(document.getElementById('q8').value) +
+                      parseFloat(document.getElementById('q9').value) + parseFloat(document.getElementById('q5').value) +
+                      parseFloat(document.getElementById('q3').value) + parseFloat(document.getElementById('q10').value);
+            
+            document.getElementById('v-total').innerText = res.toFixed(1);
+            document.getElementById('resultado').style.display = 'block';
+            localStorage.setItem('miHuella', res.toFixed(1));
+        }
+    </script>
+</body>
+</html>
